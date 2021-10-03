@@ -19,3 +19,15 @@ services:
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+  vispr:
+    ports:
+      - "5000:5000" # not sure if necessary
+    image: python:3.9
+    restart: unless-stopped
+    working_dir: /code
+    volumes:
+      - /home/vispr/sars:/data
+      - /home/vispr/covid19-screens/vispr/:/code
+    command: "/bin/bash -c 'python setup.py install && vispr server --host 0.0.0.0 --port 5000 /data/*/workflow/results/*.yaml'"
+    hostname: vispr
+
